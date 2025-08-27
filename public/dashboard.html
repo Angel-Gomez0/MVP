@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - MVP</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    #gameContainer { display: flex; justify-content: center; margin-top: 20px; }
+    canvas { border: 2px solid black; background: #ddd; }
+    table { margin: 10px auto; border-collapse: collapse; }
+    th, td { padding: 5px 10px; border: 1px solid black; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard</h1>
+  <p>Bienvenido! Selecciona un juego:</p>
+
+  <button onclick="startGame('pingpong')">Ping Pong vs CPU</button>
+  <button onclick="startGame('spaceinvaders')">Space Invaders</button>
+  <button onclick="startGame('pingpongVS')">Ping Pong vs Amigo</button>
+  <button onclick="logout()">Logout</button>
+
+  <div id="gameContainer"></div>
+  <div id="topScores"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/games.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

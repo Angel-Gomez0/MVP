@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - MVP</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+    input, button { padding: 10px; margin: 5px; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Register</h1>
+  <form id="registerForm">
+    <input type="text" id="name" placeholder="Nombre" required><br>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Contraseña" required><br>
+    <input type="number" id="age" placeholder="Edad" min="1" max="120" required><br>
+    <button type="submit">Registrarse</button>
+  </form>
+  <p class="error" id="error"></p>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const errorEl = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.textContent = '';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const age = parseInt(document.getElementById('age').value);
+
+      if (!name || !email || !password || !age) {
+        errorEl.textContent = 'Todos los campos son obligatorios';
+        return;
+      }
+
+      if (password.length < 6) {
+        errorEl.textContent = 'La contraseña debe tener al menos 6 caracteres';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, age })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al registrarse');
+
+        alert('Registro exitoso. Ahora podés iniciar sesión');
+        window.location.href = 'login.html';
+      } catch (err) {
+        errorEl.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>
