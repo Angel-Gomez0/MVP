@@ -396,7 +396,7 @@ function saveScore(gameId, score) {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify({ gameId, score })
+        body: JSON.stringify({ id_game: gameId, score }) 
     })
     .then(res => {
         if (!res.ok) throw new Error('Error guardando el score');
