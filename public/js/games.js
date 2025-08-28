@@ -7,7 +7,7 @@ if(!token){
 // ==========================
 // Conectar socket.io
 // ==========================
-const socket = io();
+const socket = io('http://179.43.112.46:3001/');
 
 // ==========================
 // Mostrar top 10 scores
