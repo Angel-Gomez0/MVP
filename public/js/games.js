@@ -39,82 +39,91 @@ function showTopScores(id_game){
 // ==========================
 // Ping Pong clásico
 // ==========================
-function startPingPong(){
+function startPingPong() {
     const container = document.getElementById('gameContainer');
-    container.innerHTML='';
+    container.innerHTML = '';
     const canvas = document.createElement('canvas');
-    canvas.width=500;
-    canvas.height=400;
+    canvas.width = 500;
+    canvas.height = 400;
     container.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    let ballX=250, ballY=200, ballDX=3, ballDY=3;
-    let paddleWidth=80, paddleHeight=10;
-    let playerX=210, cpuX=210;
-    const keys = {left:false, right:false};
-    let score=0;
+    let ballX = 250, ballY = 200, ballDX = 3, ballDY = 3;
+    let paddleWidth = 80, paddleHeight = 10;
+    let playerX = 210, cpuX = 210;
+    const keys = { left: false, right: false };
+    let score = 0;
     let cpuBaseSpeed = 3;
     let hitCount = 0;
+    let gameOver = false; // flag para evitar guardar score varias veces
 
-    function draw(){
-        ctx.fillStyle='#aaa'; // fondo gris
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+    function draw() {
+        if (gameOver) return; // detener dibujo si terminó el juego
+
+        ctx.fillStyle = '#aaa'; // fondo gris
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.beginPath();
-        ctx.arc(ballX, ballY, 10, 0, Math.PI*2);
-        ctx.fillStyle='black';
+        ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+        ctx.fillStyle = 'black';
         ctx.fill();
         ctx.closePath();
 
-        ctx.fillStyle='blue';
-        ctx.fillRect(playerX, canvas.height-paddleHeight-10, paddleWidth, paddleHeight);
-        ctx.fillStyle='red';
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(playerX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+        ctx.fillStyle = 'red';
         ctx.fillRect(cpuX, 10, paddleWidth, paddleHeight);
 
         ballX += ballDX;
         ballY += ballDY;
 
-        if(ballX<10||ballX>canvas.width-10) ballDX=-ballDX;
+        if (ballX < 10 || ballX > canvas.width - 10) ballDX = -ballDX;
 
-        if(ballY>canvas.height-paddleHeight-20 && ballX>playerX && ballX<playerX+paddleWidth){
-            ballDY=-ballDY;
-            score+=10;
-            ballDX*=1.02;
-            ballDY*=1.02;
+        if (ballY > canvas.height - paddleHeight - 20 && ballX > playerX && ballX < playerX + paddleWidth) {
+            ballDY = -ballDY;
+            score += 10;
+            ballDX *= 1.02;
+            ballDY *= 1.02;
             hitCount++;
-            if(hitCount%3===0) cpuBaseSpeed+=0.5;
+            if (hitCount % 3 === 0) cpuBaseSpeed += 0.5;
         }
 
-        if(ballY<paddleHeight+20 && ballX>cpuX && ballX<cpuX+paddleWidth){
-            ballDY=-ballDY;
-            ballDX*=1.02;
-            ballDY*=1.02;
+        if (ballY < paddleHeight + 20 && ballX > cpuX && ballX < cpuX + paddleWidth) {
+            ballDY = -ballDY;
+            ballDX *= 1.02;
+            ballDY *= 1.02;
         }
 
-        if(ballY>canvas.height){ clearInterval(interval); saveScore(1, score); alert('Perdiste! Score: '+score); }
-        if(ballY<0){ clearInterval(interval); saveScore(1, score); alert('Ganaste contra la CPU! Score: '+score); }
+        // Condición de fin de juego
+        if (!gameOver && (ballY > canvas.height || ballY < 0)) {
+            gameOver = true;
+            clearInterval(interval);
+            saveScore(1, score);
+            if (ballY > canvas.height) alert('Perdiste! Score: ' + score);
+            else alert('Ganaste contra la CPU! Score: ' + score);
+        }
 
-        let cpuCenter = cpuX + paddleWidth/2;
-        if(ballX>cpuCenter) cpuX += Math.min(cpuBaseSpeed, ballX-cpuCenter);
-        if(ballX<cpuCenter) cpuX -= Math.min(cpuBaseSpeed, cpuCenter-ballX);
-        if(cpuX<0) cpuX=0;
-        if(cpuX+paddleWidth>canvas.width) cpuX=canvas.width-paddleWidth;
+        let cpuCenter = cpuX + paddleWidth / 2;
+        if (ballX > cpuCenter) cpuX += Math.min(cpuBaseSpeed, ballX - cpuCenter);
+        if (ballX < cpuCenter) cpuX -= Math.min(cpuBaseSpeed, cpuCenter - ballX);
+        if (cpuX < 0) cpuX = 0;
+        if (cpuX + paddleWidth > canvas.width) cpuX = canvas.width - paddleWidth;
 
-        if(keys.left) playerX-=5;
-        if(keys.right) playerX+=5;
-        if(playerX<0) playerX=0;
-        if(playerX+paddleWidth>canvas.width) playerX=canvas.width-paddleWidth;
+        if (keys.left) playerX -= 5;
+        if (keys.right) playerX += 5;
+        if (playerX < 0) playerX = 0;
+        if (playerX + paddleWidth > canvas.width) playerX = canvas.width - paddleWidth;
     }
 
     const interval = setInterval(draw, 16);
 
-    document.addEventListener('keydown', e=>{
-        if(e.key==='ArrowLeft') keys.left=true;
-        if(e.key==='ArrowRight') keys.right=true;
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') keys.left = true;
+        if (e.key === 'ArrowRight') keys.right = true;
     });
-    document.addEventListener('keyup', e=>{
-        if(e.key==='ArrowLeft') keys.left=false;
-        if(e.key==='ArrowRight') keys.right=false;
+    document.addEventListener('keyup', e => {
+        if (e.key === 'ArrowLeft') keys.left = false;
+        if (e.key === 'ArrowRight') keys.right = false;
     });
 
     showTopScores(1);
@@ -239,6 +248,7 @@ function startSpaceInvaders() {
     let player = { x: 225, y: 350, width: 50, height: 20 };
     let bullets = [], enemyBullets = [], enemies = [], obstacles = [];
     let score = 0, lastShotTime = 0, lastEnemyShot = Date.now();
+    let gameOver = false; // flag para evitar guardar score varias veces
 
     // Imágenes
     const playerImg = new Image(); playerImg.src = 'img/player.png';
@@ -262,6 +272,8 @@ function startSpaceInvaders() {
     const keys = { left: false, right: false, up: false };
 
     function draw() {
+        if (gameOver) return; // detener dibujado si terminó el juego
+
         // Fondo gris
         ctx.fillStyle = '#aaa';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -316,7 +328,8 @@ function startSpaceInvaders() {
             b.y += 4 + score / 500;
 
             // Colisión player
-            if (b.x < player.x + player.width && b.x + 5 > player.x && b.y < player.y + player.height && b.y + 10 > player.y) {
+            if (!gameOver && b.x < player.x + player.width && b.x + 5 > player.x && b.y < player.y + player.height && b.y + 10 > player.y) {
+                gameOver = true;
                 clearInterval(interval);
                 saveScore(2, score);
                 alert('¡Fuiste alcanzado! Score guardado: ' + score);
@@ -340,6 +353,8 @@ function startSpaceInvaders() {
     }
 
     const interval = setInterval(() => {
+        if (gameOver) return; // detener lógica si terminó el juego
+
         // Disparo jugador
         if (keys.up) {
             const now = Date.now();
@@ -349,7 +364,7 @@ function startSpaceInvaders() {
             }
         }
 
-        // Disparo enemigo moderado
+        // Disparo enemigo
         if (enemies.length > 0 && Date.now() - lastEnemyShot > 2000) {
             const shooter = enemies[Math.floor(Math.random() * enemies.length)];
             enemyBullets.push({ x: shooter.x + shooter.width / 2 - 2.5, y: shooter.y + 10 });
@@ -372,6 +387,7 @@ function startSpaceInvaders() {
     draw();
     showTopScores(2);
 }
+
 
 
 // ==========================
