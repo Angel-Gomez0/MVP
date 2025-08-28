@@ -382,3 +382,29 @@ window.startGame=function(game){
     else if(game==='spaceinvaders') startSpaceInvaders();
     else if(game==='pingpongVS') startPingPongVS();
 };
+
+// ==========================
+// save Score
+// ==========================
+function saveScore(gameId, score) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    fetch('/api/scores', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ gameId, score })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Error guardando el score');
+        return res.json();
+    })
+    .then(data => {
+        console.log('Score guardado:', data);
+        showTopScores(gameId); // actualizar tabla de top scores
+    })
+    .catch(err => console.error(err));
+}
